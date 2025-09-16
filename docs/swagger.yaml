@@ -1,0 +1,556 @@
+basePath: /api
+definitions:
+  authcontroller.deleteResponse:
+    properties:
+      response:
+        properties:
+          token_id:
+            type: boolean
+        type: object
+    type: object
+  authcontroller.loginRequest:
+    properties:
+      login:
+        type: string
+      pswd:
+        type: string
+    type: object
+  authcontroller.loginResponse:
+    properties:
+      response:
+        properties:
+          token:
+            type: string
+        type: object
+    type: object
+  authcontroller.registerRequest:
+    properties:
+      login:
+        type: string
+      pswd:
+        type: string
+      token:
+        type: string
+    type: object
+  authcontroller.registerResponse:
+    properties:
+      response:
+        properties:
+          login:
+            type: string
+        type: object
+    type: object
+  file.File:
+    properties:
+      created:
+        type: string
+      file:
+        type: boolean
+      grant:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      mime:
+        type: string
+      name:
+        type: string
+      public:
+        type: boolean
+      size:
+        type: integer
+    type: object
+  filescontroller.deleteFileResponse:
+    properties:
+      response:
+        properties:
+          file_id:
+            type: boolean
+        type: object
+    type: object
+  filescontroller.filesDataResponse:
+    properties:
+      docs:
+        items:
+          $ref: '#/definitions/file.File'
+        type: array
+    type: object
+  filescontroller.getFileResponse:
+    properties:
+      data: {}
+    type: object
+  filescontroller.getFilesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/filescontroller.filesDataResponse'
+    type: object
+  filescontroller.uploadDataResponse:
+    properties:
+      file:
+        type: string
+      json: {}
+    type: object
+  response.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend server for file service
+  title: Astral File Service
+  version: "1.0"
+paths:
+  /api/auth:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authcontroller.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authcontroller.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - auth
+  /api/auth/:token_id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authcontroller.deleteResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authcontroller.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - auth
+  /api/docs:
+    get:
+      description: |-
+        Get filtered and paginated list of documents. Returns own documents if login not specified.
+        Check if documents exist with given filters (HEAD request). Returns same headers as GET but without body.
+      parameters:
+      - description: User login filter (optional - returns own documents if not specified)
+        in: query
+        name: login
+        type: string
+      - description: Column name for filtering (optional)
+        in: query
+        name: key
+        type: string
+      - description: Filter value (optional)
+        in: query
+        name: value
+        type: string
+      - default: 50
+        description: Number of documents to return (optional)
+        in: query
+        maximum: 1000
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Documents exist
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Check documents availability
+      tags:
+      - docs
+      - docs
+    head:
+      description: |-
+        Get filtered and paginated list of documents. Returns own documents if login not specified.
+        Check if documents exist with given filters (HEAD request). Returns same headers as GET but without body.
+      parameters:
+      - description: User login filter (optional - returns own documents if not specified)
+        in: query
+        name: login
+        type: string
+      - description: Column name for filtering (optional)
+        in: query
+        name: key
+        type: string
+      - description: Filter value (optional)
+        in: query
+        name: value
+        type: string
+      - default: 50
+        description: Number of documents to return (optional)
+        in: query
+        maximum: 1000
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Documents exist
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Check documents availability
+      tags:
+      - docs
+      - docs
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload new document with metadata and file
+      parameters:
+      - description: Document metadata in JSON format
+        example: '{"name": "photo.jpg", "file": true, "public": false, "mime": "image/jpg",
+          "grant": ["login1", "login2"]}'
+        in: formData
+        name: meta
+        required: true
+        type: string
+      - description: Document data in JSON format (optional)
+        in: formData
+        name: json
+        type: string
+      - description: Document file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document uploaded successfully
+          schema:
+            $ref: '#/definitions/filescontroller.uploadDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload document
+      tags:
+      - docs
+  /api/docs/{id}:
+    delete:
+      description: Delete document by ID
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filescontroller.deleteFileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete document
+      tags:
+      - docs
+    get:
+      description: |-
+        Get single document by ID. Returns file content or JSON data depending on document type.
+        Check if document exists and get headers (HEAD request). Returns same headers as GET but without body.
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Authentication token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      - application/octet-stream
+      responses:
+        "200":
+          description: Documents exist
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Check document availability
+      tags:
+      - docs
+      - docs
+    head:
+      description: |-
+        Get single document by ID. Returns file content or JSON data depending on document type.
+        Check if document exists and get headers (HEAD request). Returns same headers as GET but without body.
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Authentication token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      - application/octet-stream
+      responses:
+        "200":
+          description: Documents exist
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Check document availability
+      tags:
+      - docs
+      - docs
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Registration user
+      parameters:
+      - description: user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authcontroller.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authcontroller.registerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Register
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT Authorization header using the Bearer scheme. Example: "Bearer
+      {token}"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

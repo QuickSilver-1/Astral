@@ -1,0 +1,56 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+issues:
+  exclude-dirs:
+    - vendor
+  exclude-files:
+    - .*\\.generated\\.go
+  exclude-use-default: false
+  exclude:
+    - "don't use underscores in Go names"
+    - "errors should start with lowercase"
+
+linters-settings:
+  shadow:
+    checks: "all"
+
+  revive:
+    ignore-generated-header: true
+
+  gocyclo:
+    min-complexity: 10
+
+  misspell:
+    locale: US
+
+  errcheck:
+    check-type-assertions: false
+    exclude-functions: |
+      Close
+
+linters:
+  enable:
+    - govet
+    - revive
+    - gocyclo
+    - misspell
+    - errcheck
+    - staticcheck
+    - gosec
+  disable-all: false
+
+output:
+  formats:
+    format: colored-line-number
+    sort-results: true
+    print-issued-lines: true
+
+service:
+  disable:
+    - timestamp
+
+fix: false

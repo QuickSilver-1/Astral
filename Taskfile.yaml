@@ -1,0 +1,48 @@
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  swag:
+    desc: Create swagger
+    cmds:
+      - swag init -g internal/presentation/http/handler.go --dir ./ --output docs
+  lint:
+    desc: Run golangci linter
+    cmds:
+      - golangci-lint run --config=./.golangci.yaml
+
+  rdc:
+    desc: Build and run docker compose
+    cmds:
+      - docker compose build && docker compose up
+
+  migrate:up:
+    desc: Run database migrations
+    cmds:
+      - go run cmd/migrator/main.go -db-url="postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@localhost:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}?sslmode=disable" -migrations-path="./migrations"
+
+  migrate:down:
+    desc: Rollback the last database migration
+    cmds:
+      - go run cmd/migrator/main.go -db-url="postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@localhost:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}?sslmode=disable" -migrations-path="./migrations" -down
+
+  migrate:step-down:
+    desc: Rollback N migrations
+    cmds:
+      - migrate -path ./migrations -database "postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST}}:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}?sslmode=disable" down {{.s | default "1"}}
+
+  migrate:version:
+    desc: Show current migration version
+    cmds:
+      - migrate -path ./migrations -database "postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST}}:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}?sslmode=disable" version
+
+  migrate:force:
+    vars:
+      V: "{{.V}}"
+    desc: Force migration
+    cmds:
+      - migrate -path ./migrations -database "postgres://postgres:1234567890@localhost:5432/postgres?sslmode=disable" force {{.V}}
+
+vars:
+  MIGRATE_CMD: go run cmd/migrate/main.go
