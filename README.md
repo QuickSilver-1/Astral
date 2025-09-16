@@ -1,79 +1,33 @@
-# Rizq Backend
+# File system
+ Тестовое задание для компании Astral
+ 
+  ![Build Status](https://github.com/QuickSilver-1/Astral/actions/workflows/go.yml/badge.svg)
 
-Backend service with PostgreSQL, Weaviate, and Presidio, containerized using Docker.
+ <h3>Прототип сервиса хранения файлов</h3>
 
-## 🐳 Docker Compose Services
+ <h2>Структура проекта</h2>
 
-| Service                 | Description                                        |
-| ----------------------- | -------------------------------------------------- |
-| **postgres**            | PostgreSQL database for core data storage          |
-| **weaviate**            | Vector database for semantic search capabilities   |
-| **contextionary**       | Weaviate component for natural language processing |
-| **presidio-analyzer**   | Microsoft's sensitive data analyzer                |
-| **presidio-anonymizer** | Tool for anonymizing sensitive data                |
-| **app**                 | Main backend application                           |
+<h3>Запуск сервера</h3>
+<h4>Настраиваем env file ---> <code>docker-compose up или task rdc, если установлена утилита</code></h4>
 
-## 🚀 Quick Start Guide
 
-### 1. Install Task
+<h3>Общее описание</h3>
+Спасибо за интересную задачу, было интересно делать. Реализовал все необходимые функции. Аунтификация реализована через JWT. После входа в систему выдается токен, который затем необходимо передавать через Заголовок <code>Auntification</code> с <code>Bearer</code>. Программа разделена на 4 слоя - доменный - основные структуры, интерфейсы для взаимодействия с сервисами и сторонними приложениями, сервисный - бизнес-логика приложения, а также presentation - реализации репозиториев, а также ручки для и REST API сервера.
+<h4>Спецификацию api можно посмотреть по пути /swagger/index.html</h4>
 
-**MacOS:**
+<h3>Стек</h3>
+<ol>
+ <li>Golang</li>
+ <li>PostgreSQL</li>
+ <li>Gin Framework</li>
+ <li>Redis</li>
+ <li>Minio</li>
+</ol>
 
-```bash
-brew install go-task/tap/go-task
-```
+<h3>TO DO</h3>
+<ol>
+ <li>Написать тесты</li>
+ <li>Добавить взаимодействие через брокер</li>
+ <li>Добавить grpc</li>
+</ol>
 
-**Windows (via Scoop):**
-
-```powershell
-scoop install task
-```
-
-**Linux:**
-
-```bash
-sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
-```
-
-### 2. Start all services
-
-```bash
-docker-compose up -d --build
-```
-
-### 3. Run database migrations
-
-```bash
-task migrate:up
-```
-
-### 4. Access the API
-
-Once running, the API is available at:
-
-```
-http://localhost:8080
-```
-
-## 🛠 Useful Commands
-
-```bash
-# View backend logs
-docker-compose logs -f app
-
-# Roll back migrations
-task migrate:down
-
-# View available Task commands
-task
-
-# Rebuild specific container
-docker-compose up -d --build app
-```
-
-## 📋 Requirements
-
-- Docker
-- Docker Compose
-- Task
-- Go (for development)
